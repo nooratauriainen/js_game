@@ -33,6 +33,8 @@
     var score = 0;
     var lives = 1;
     var play = false;
+    var setup = true;
+
     function setBackground(){
         var grd = ctx.createLinearGradient(0, 0, 0, canvas.height);
         grd.addColorStop(0.3, "darkblue");
@@ -41,11 +43,12 @@
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         for(c=0; c<brickColumnCount; c++) {
             for(r=0; r<brickRowCount; r++) {
-              if(bricks[c][r].status == 1) {
+              if(bricks[c][r].status == 1 || setup == true) {
                 var brickX = (c*(brickWidth+brickPadding))+brickOffsetLeft;
                 var brickY = (r*(brickHeight+brickPadding))+brickOffsetTop;
                 bricks[c][r].x = brickX;
                 bricks[c][r].y = brickY;
+                bricks[c][r].status = 1;
                 ctx.beginPath();
                 ctx.rect(brickX, brickY, brickWidth, brickHeight);
                 if (r == 0) {
@@ -60,6 +63,7 @@
               }
             }
         }
+        setup = false;
         ctx.font = "22px Impact";
         ctx.fillStyle = "white";
         ctx.fillText("Score: "+score, canvas.width*0.75, canvas.height*0.07);
@@ -86,6 +90,7 @@
       ctx.fill();
       ctx.closePath();
     }
+
     function drawPaddle() {
       ctx.beginPath();
       ctx.rect(paddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight);
@@ -93,6 +98,7 @@
       ctx.fill();
       ctx.closePath();
     }
+
     function collisionDetection() {
       for(c=0; c<brickColumnCount; c++) {
           for(r=0; r<brickRowCount; r++) {
@@ -107,10 +113,7 @@
                 } else {
                   score = score+3;
                 }
-                if(score == brickRowCount*brickColumnCount+3*brickColumnCount) {
-                        alert("YOU WIN, CONGRATULATIONS!");
-                        document.location.reload();
-                }
+
               }
           }
       }
@@ -118,7 +121,9 @@
           dy = -dy;
       }
     }
+
     function startMenu() {
+
         setBackground();
         ctx.beginPath();
         ctx.rect(0.15*canvas.width, 0.4*canvas.height, 0.7*canvas.width, 0.3*canvas.height);
@@ -139,8 +144,33 @@
           ctx.font = "25px Impact";
           ctx.fillText("Game Over", 0.25*canvas.width, 0.55*canvas.height);
           setTimeout(function(){
-            document.location.reload();
-          }, 3000);
+            lives = 1;
+            score = 0;
+            x = canvas.width/2;
+            y = canvas.height-30;
+            paddleX = (canvas.width-paddleWidth)/2;
+            setup = true;
+          }, 2000);
+
+        } else if (score == brickRowCount*brickColumnCount+3*brickColumnCount) {
+
+          var msg = {
+            "messageType": "SCORE",
+            "score": parseFloat(score),
+          }
+
+          window.parent.postMessage(msg, "*");
+
+          ctx.font = "25px Impact";
+          ctx.fillText("You win!", 0.25*canvas.width, 0.55*canvas.height);
+          setTimeout(function(){
+            lives = 1;
+            score = 0;
+            x = canvas.width/2;
+            y = canvas.height-30;
+            paddleX = (canvas.width-paddleWidth)/2;
+            setup = true;
+          }, 2000);
 
         } else {
           ctx.fillText("Press P -> Play/Pause", 0.20*canvas.width, 0.48*canvas.height);
@@ -149,6 +179,7 @@
         }
 
     }
+
     function draw() {
       if (play == false) {
         startMenu();
@@ -222,6 +253,7 @@
   function QuitHandler(e) {
     if(e.keyCode == 81 && play == true) {
        play = false;
+       setup = true;
        score = 0;
        lives = 1;
       }
