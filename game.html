@@ -183,16 +183,21 @@
       } else if(y + dy > canvas.height-ballRadius) {
         lives -= 1;
         if (lives == 0){
-          alert("Game Over :(");
           play = false;
-
+          ctx.font = "20px Impact";
+          ctx.fillStyle = "white";
+          ctx.fillText("Game Over", 0.20*canvas.width, 0.48*canvas.height);
+          setTimeout(function() {
+            lives = 1;
+            draw();
+          }, 3000);
           var msg = {
             "messageType": "SCORE",
             "score": parseFloat(score),
           }
 
           window.parent.postMessage(msg, "*");
-          document.location.reload();
+
           
         } else {
           x = canvas.width/2;
