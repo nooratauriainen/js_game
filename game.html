@@ -24,16 +24,29 @@
     var brickOffsetTop = 30;
     var brickOffsetLeft = 18;
     var bricks = [];
+
     for(c=0; c<brickColumnCount; c++) {
         bricks[c] = [];
         for(r=0; r<brickRowCount; r++) {
             bricks[c][r] = { x: 0, y: 0, status: 1 };
         }
     }
+    
     var score = 0;
     var lives = 1;
     var play = false;
     var setup = true;
+
+    var x = canvas.width/2;
+    var y = canvas.height-30;
+    var dx = 2;
+    var dy = -2;
+    var ballRadius = 10;
+    var paddleHeight = 10;
+    var paddleWidth = 75;
+    var paddleX = (canvas.width-paddleWidth)/2;
+    var rightPressed = false;
+    var leftPressed = false;
 
     function setBackground(){
         var grd = ctx.createLinearGradient(0, 0, 0, canvas.height);
@@ -41,6 +54,7 @@
         grd.addColorStop(0.9, "lightblue");
         ctx.fillStyle = grd;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+
         for(c=0; c<brickColumnCount; c++) {
             for(r=0; r<brickRowCount; r++) {
               if(bricks[c][r].status == 1 || setup == true) {
@@ -63,22 +77,14 @@
               }
             }
         }
+
         setup = false;
         ctx.font = "22px Impact";
         ctx.fillStyle = "white";
         ctx.fillText("Score: "+score, canvas.width*0.75, canvas.height*0.07);
         ctx.fillText("♥: "+lives, canvas.width*0.05,  canvas.height*0.07);
     }
-    var x = canvas.width/2;
-    var y = canvas.height-30;
-    var dx = 2;
-    var dy = -2;
-    var ballRadius = 10;
-    var paddleHeight = 10;
-    var paddleWidth = 75;
-    var paddleX = (canvas.width-paddleWidth)/2;
-    var rightPressed = false;
-    var leftPressed = false;
+
     function drawBall() {
       ctx.beginPath();
       ctx.arc(x, y, ballRadius, 0, Math.PI*2);
@@ -113,10 +119,10 @@
                 } else {
                   score = score+3;
                 }
-
               }
           }
       }
+
       if (x > paddleX-ballRadius && x < paddleX+paddleWidth+ballRadius && y == canvas.height-paddleHeight-ballRadius) {
           dy = -dy;
       }
@@ -141,6 +147,7 @@
           }
 
           window.parent.postMessage(msg, "*");
+
           ctx.font = "25px Impact";
           ctx.fillText("Game Over", 0.25*canvas.width, 0.55*canvas.height);
           setTimeout(function(){
@@ -163,6 +170,7 @@
 
           ctx.font = "25px Impact";
           ctx.fillText("You win!", 0.25*canvas.width, 0.55*canvas.height);
+
           setTimeout(function(){
             lives = 1;
             score = 0;
@@ -181,13 +189,17 @@
     }
 
     function draw() {
+
       if (play == false) {
         startMenu();
+
       } else {
+
       setBackground();
       drawBall();
       drawPaddle();
       collisionDetection();
+
       if(rightPressed && paddleX < canvas.width-paddleWidth) {
           paddleX += 6;
       }
@@ -217,6 +229,8 @@
     }
       requestAnimationFrame(draw);
     }
+
+
   document.addEventListener("keydown", PlayPauseHandler, false);
   document.addEventListener("keydown", SaveHandler, false);
   document.addEventListener("keydown", QuitHandler, false);
@@ -224,6 +238,7 @@
   document.addEventListener("keyup", keyUpHandler, false);
   document.addEventListener("mousemove", mouseMoveHandler, false);
   document.addEventListener("message", receiveMessage, false);
+
   function PlayPauseHandler(e) {
     if(e.keyCode == 80 && play == false) {
        play = true;
@@ -232,6 +247,7 @@
         play = false;
       }
     }
+
   function SaveHandler(e) {
     if (e.keycode == 83){
       var playerItems = "";
@@ -250,6 +266,7 @@
       window.parent.postMessage(msg, "*");
     }
   }
+
   function QuitHandler(e) {
     if(e.keyCode == 81 && play == true) {
        play = false;
@@ -258,6 +275,7 @@
        lives = 1;
       }
     }
+
   function keyDownHandler(e) {
     if(e.keyCode == 39) {
         rightPressed = true;
@@ -266,6 +284,7 @@
         leftPressed = true;
       }
     }
+
   function keyUpHandler(e) {
       if(e.keyCode == 39) {
           rightPressed = false;
@@ -274,12 +293,14 @@
           leftPressed = false;
       }
   }
+
   function mouseMoveHandler(e) {
     var relativeX = e.clientX - canvas.offsetLeft;
     if(relativeX > paddleWidth/2 && relativeX < canvas.width- paddleWidth/2) {
         paddleX = relativeX - paddleWidth/2;
     }
   }
+
   function receiveMessage(e) {
     if (e.origin != window.parent) {
       return;
@@ -294,11 +315,14 @@
           }
         }
       play = false;
+      setup = false;
       draw();
     } else if (e.data.messageType == "ERROR") {
         alert(e.data.info);
+        draw();
     }
   }
+
   var message1 = {
     messageType: "SETTING",
     options: {
@@ -306,11 +330,14 @@
       "height": canvas.height
     }
   };
+
   window.parent.postMessage(message1, "*");
+
   var message2 = {
     messageType: "LOAD_REQUEST",
   };
   window.parent.postMessage(message2, "*");
+
   draw();
   </script>
 
