@@ -184,11 +184,11 @@
         lives -= 1;
         if (lives == 0){
           alert("Game Over :(");
-
+          play = false;
+          
           var msg = {
             "messageType": "SCORE",
             "score": parseFloat(score),
-
           }
 
           window.parent.postMessage(msg, "*");
