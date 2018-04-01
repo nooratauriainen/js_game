@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
-  <title>Coolest game ever</title>
+  <title>Brick game</title>
   <style>
     	* { padding: 0; margin: 0; }
     	canvas { background: #eee; display: block; margin: 0 auto; }
@@ -185,6 +185,7 @@
         if (lives == 0){
           alert("Game Over :(");
 
+
           var playerItems = "";
 
           for(c=0; c<brickColumnCount; c++) {
@@ -192,13 +193,10 @@
                 playerItems += bricks[c][r].status;
               }
             }
-
           var msg = {
-            "messageType": "SAVE",
-            "GameState":{
-              "score": parseFloat(score),
-              "playerItems": playerItems,
-            }
+            "messageType": "SCORE",
+            "score": parseFloat(score),
+
           }
 
           window.parent.postMessage(msg, "*");
@@ -352,3 +350,4 @@
 
 </body>
 </html>
+
