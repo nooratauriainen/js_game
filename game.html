@@ -185,14 +185,14 @@
         if (lives == 0){
           alert("Game Over :(");
           play = false;
-          document.location.reload();
+
           var msg = {
             "messageType": "SCORE",
             "score": parseFloat(score),
           }
 
           window.parent.postMessage(msg, "*");
-
+          document.location.reload();
           
         } else {
           x = canvas.width/2;
