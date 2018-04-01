@@ -139,8 +139,7 @@
           ctx.font = "25px Impact";
           ctx.fillText("Game Over", 0.25*canvas.width, 0.55*canvas.height);
           setTimeout(function(){
-            lives = 1;
-            score = 0;
+            document.location.reload();
           }, 3000);
 
         } else {
@@ -286,4 +285,3 @@
 
 </body>
 </html>
-
