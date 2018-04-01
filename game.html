@@ -185,14 +185,6 @@
         if (lives == 0){
           alert("Game Over :(");
 
-
-          var playerItems = "";
-
-          for(c=0; c<brickColumnCount; c++) {
-              for(r=0; r<brickRowCount; r++) {
-                playerItems += bricks[c][r].status;
-              }
-            }
           var msg = {
             "messageType": "SCORE",
             "score": parseFloat(score),
@@ -201,6 +193,7 @@
 
           window.parent.postMessage(msg, "*");
           document.location.reload();
+          
         } else {
           x = canvas.width/2;
           y = canvas.height-30;
