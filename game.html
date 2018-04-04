@@ -1,9 +1,16 @@
 <!DOCTYPE html>
 <html>
+ // Break the bricks by bouncing the ball with a paddle. You can move the paddle with the mouse or with left and right keys according 
+// to your preference. You can pause the game anytime by pressing P or quit by pressing Q (which will submit your score and start a 
+// new game). When the game is paused, it is possible to save the current gamestate by clicking the Save-button.
+
+// When the game starts, you'll be given 3 lives. If you drop the ball, you'll lose one life. 
+// Breaking a brick that is in the lowest row gives you 1 point, middle row brick 2 points and a highest row brick gives you 3 points. 
+// Maximum score is 36 - let's see if you can reach it!
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
-  <title>Brick game</title>
+  <title>Bricks</title>
   <style>
     	* { padding: 0; margin: 0; }
     	canvas { background: #eee; display: block; margin: 0 auto; }
@@ -22,7 +29,6 @@
       }
 
    </style>
-  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 </head>
 <body>
 
@@ -30,6 +36,7 @@
   <button id="Save">Save</button>
 
   <script>
+    // Constant variables
     var canvas = document.getElementById("myCanvas");
     var ctx = canvas.getContext("2d");
     var brickRowCount = 3;
@@ -39,6 +46,10 @@
     var brickPadding = 10;
     var brickOffsetTop = 30;
     var brickOffsetLeft = 18;
+    
+    // Creating the bricks-table
+    // When brick status is 1, the brick will be shown
+    // When brick status is 0, it will be hidden and it is not possible to hit it again
     var bricks = [];
     for(c=0; c<brickColumnCount; c++) {
         bricks[c] = [];
@@ -47,6 +58,7 @@
         }
     }
 
+    // Sending the essential settings to parent window
     var message1 = {
       messageType: "SETTING",
       options: {
@@ -55,16 +67,25 @@
       }
     };
     window.parent.postMessage(message1, "*");
+    
+    // Sending a load request to parent window for getting the 
+    // player's saved gamestate
     var message2 = {
       messageType: "LOAD_REQUEST",
     };
     window.parent.postMessage(message2, "*");
+    
+    // Adding an event listener to get the data of the saved
+    // score and gamestate
+    window.addEventListener("message", receiveMessage, false);
 
     function receiveMessage(e) {
 
       if (e.data.messageType == "LOAD") {
         score = parseInt(e.data.gameState.score);
-        if (e.data.gameState.playerItems != [] && e.data.gameState.playerItems[0] != "N") {
+        if (e.data.gameState.playerItems != [] && e.data.gameState.playerItems[0] != "N") { 
+          // If there is a saved gamestate, lives and bricks' statuses will be
+          // modified 
           lives = parseInt(e.data.gameState.playerItems[0]);
           var i = 1;
           for(c=0; c<brickColumnCount; c++) {
@@ -74,30 +95,30 @@
               }
             }
 
-          play = false;
+          play = false; //This makes the game menu visible
         }
       } else if (e.data.messageType == "ERROR") {
           alert(e.data.info);
       }
     }
 
-    window.addEventListener("message", receiveMessage, false);
-
+    // Setting up variables
     var score = 0;
     var lives = 3;
     var play = false;
-    var x = canvas.width/2;
+    var x = canvas.width/2; // Ball coordinates
     var y = canvas.height-30;
     var dx = 2;
     var dy = -2;
-    var ballRadius = 10;
-    var paddleHeight = 10;
-    var paddleWidth = 75;
+    var ballRadius = 10; // Constant
+    var paddleHeight = 10; // Constant
+    var paddleWidth = 75; // Constant
     var paddleX = (canvas.width-paddleWidth)/2;
     var rightPressed = false;
     var leftPressed = false;
 
     function setBackground(){
+      // Setting up the background with fancy color gradients
         var grd = ctx.createLinearGradient(0, 0, 0, canvas.height);
         grd.addColorStop(0.3, "darkblue");
         grd.addColorStop(0.9, "lightblue");
@@ -130,7 +151,9 @@
         ctx.fillText("Score: "+score, canvas.width*0.75, canvas.height*0.07);
         ctx.fillText("♥: "+lives, canvas.width*0.05,  canvas.height*0.07);
     }
+    
     function drawBall() {
+      // Draws the ball at current (x,y)
       ctx.beginPath();
       ctx.arc(x, y, ballRadius, 0, Math.PI*2);
       var c = document.getElementById("myCanvas");
@@ -141,14 +164,18 @@
       ctx.fill();
       ctx.closePath();
     }
+    
     function drawPaddle() {
+      // Draws the paddle at current paddleX
       ctx.beginPath();
       ctx.rect(paddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight);
       ctx.fillStyle = "black";
       ctx.fill();
       ctx.closePath();
     }
+    
     function collisionDetection() {
+      // Detetcts the collisions between the ball and the bricks
       for(c=0; c<brickColumnCount; c++) {
           for(r=0; r<brickRowCount; r++) {
               var b = bricks[c][r];
@@ -169,10 +196,13 @@
           }
       }
       if (x > paddleX-ballRadius && x < paddleX+paddleWidth+ballRadius && y == canvas.height-paddleHeight-ballRadius) {
+        // Changing the ball's movement's direction
           dy = -dy;
       }
     }
+    
     function startMenu() {
+      // Displays the menu and the save-button
         if (lives > 0 && score < 36) {
           document.getElementById("Save").style.display = "inline-block";
         }
@@ -185,7 +215,7 @@
         ctx.font = "30px Impact";
         ctx.fillStyle = "white";
 
-        if (lives == 0) {
+        if (lives == 0) { // Game Over
           ctx.font = "30px Impact";
           ctx.fillText("Game Over", 0.25*canvas.width, 0.55*canvas.height);
           setTimeout(function(){
@@ -200,7 +230,7 @@
             y = canvas.height-30;
             paddleX = (canvas.width-paddleWidth)/2;
           }, 2000);
-        } else if (score >= 36) {
+        } else if (score >= 36) { // Maximum score
           var msg = {
             "messageType": "SCORE",
             "score": parseFloat(score),
@@ -219,14 +249,17 @@
             x = canvas.width/2;
             y = canvas.height-30;
             paddleX = (canvas.width-paddleWidth)/2;
-          }, 2000);
+          }, 2500);
         } else {
+          // Basic pause-menu
           ctx.fillText("Press P -> Play/Pause", 0.20*canvas.width, 0.51*canvas.height);
           ctx.fillText("Press Q -> Quit",  0.20*canvas.width, 0.63*canvas.height);
         }
     }
 
     function draw() {
+      // Calls itself with requestAnimationFrame which makes the movement
+      // smooth
       if (play == false) {
         startMenu();
       } else {
@@ -235,7 +268,8 @@
         drawBall();
         drawPaddle();
         collisionDetection();
-        if(rightPressed && paddleX < canvas.width-paddleWidth) {
+        if(rightPressed && paddleX < canvas.width-paddleWidth) { 
+          // Moving the paddle with keys
             paddleX += 6;
         }
         else if(leftPressed && paddleX > 0) {
@@ -244,6 +278,7 @@
         if(y + dy < ballRadius) {
             dy = -dy;
         } else if(y + dy > canvas.height-ballRadius) {
+          // When the ball hits the bottom of the canvas
           lives -= 1;
           if (lives == 0){
             var msg = {
@@ -270,13 +305,15 @@
         requestAnimationFrame(draw);
       }
 
-  document.addEventListener("keydown", PlayPauseHandler, false);
-  document.addEventListener("keydown", keyDownHandler, false);
-  document.addEventListener("keyup", keyUpHandler, false);
-  document.addEventListener("mousemove", mouseMoveHandler, false);
+  window.addEventListener("keydown", PlayPauseHandler, false);
+  window.addEventListener("keydown", QuitHandler, false);
+  window.addEventListener("keydown", keyDownHandler, false);
+  window.addEventListener("keyup", keyUpHandler, false);
+  window.addEventListener("mousemove", mouseMoveHandler, false);
   document.getElementById('Save').addEventListener("click", SaveHandler);
 
   function PlayPauseHandler(e) {
+    // When P is pressed
     if(e.keyCode == 80 && play == false) {
        play = true;
       }
@@ -286,7 +323,7 @@
   }
 
   function SaveHandler(e) {
-
+      // Saving the current score and bricks' statuses
       var playerItems = String(lives);
       for(c=0; c<brickColumnCount; c++) {
           for(r=0; r<brickRowCount; r++) {
@@ -303,10 +340,8 @@
       window.parent.postMessage(msg, "*");
     }
 
-  window.addEventListener("keydown", QuitHandler, true);
-
-
   function QuitHandler(e) {
+    // When Q is pressed
     if(e.keyCode == 81) {
        play = false;
       
@@ -330,7 +365,9 @@
         dy = -2;
       }
     }
+    
   function keyDownHandler(e) {
+    // Right and left keys
     if(e.keyCode == 39) {
         rightPressed = true;
       }
@@ -340,6 +377,7 @@
     }
 
   function keyUpHandler(e) {
+    // Right and left keys
       if(e.keyCode == 39) {
           rightPressed = false;
       }
@@ -349,14 +387,13 @@
   }
 
   function mouseMoveHandler(e) {
+    // It is possible to move the paddle also with the mouse
     var relativeX = e.clientX - canvas.offsetLeft;
     if(relativeX > paddleWidth/2 && relativeX < canvas.width- paddleWidth/2) {
         paddleX = relativeX - paddleWidth/2;
     }
   }
 
-
-  document.addEventListener("message", receiveMessage, false);
   draw();
 
   </script>
