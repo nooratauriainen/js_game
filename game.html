@@ -8,11 +8,12 @@
     	* { padding: 0; margin: 0; }
     	canvas { background: #eee; display: block; margin: 0 auto; }
    </style>
+  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 </head>
 <body>
 
   <canvas id="myCanvas" width="480" height="320"></canvas>
-
+  
   <script>
     var canvas = document.getElementById("myCanvas");
     var ctx = canvas.getContext("2d");
@@ -232,8 +233,6 @@
 
 
   document.addEventListener("keydown", PlayPauseHandler, false);
-  document.addEventListener("keydown", SaveHandler, false);
-  document.addEventListener("keydown", QuitHandler, false);
   document.addEventListener("keydown", keyDownHandler, false);
   document.addEventListener("keyup", keyUpHandler, false);
   document.addEventListener("mousemove", mouseMoveHandler, false);
@@ -247,13 +246,15 @@
         play = false;
       }
     }
-
+    
+  document.addEventListener("keydown", SaveHandler, false);
+    
   function SaveHandler(e) {
     if (e.keycode == 83){
       var playerItems = "";
       for(c=0; c<brickColumnCount; c++) {
           for(r=0; r<brickRowCount; r++) {
-            playerItems += String(bricks[c][r].status);
+            playerItems += bricks[c][r].status;
           }
         }
       var msg = {
@@ -267,6 +268,8 @@
     }
   }
 
+  document.addEventListener("keydown", QuitHandler, false);
+    
   function QuitHandler(e) {
     if(e.keyCode == 81 && play == true) {
        play = false;
@@ -310,7 +313,7 @@
       var i = 0;
       for(c=0; c<brickColumnCount; c++) {
           for(r=0; r<brickRowCount; r++) {
-            bricks[c][r].status = Number(e.data.gameState.playerItems[i]);
+            bricks[c][r].status = e.data.gameState.playerItems[i];
             i += 1;
           }
         }
