@@ -47,6 +47,19 @@
         }
     }
 
+    var message1 = {
+      messageType: "SETTING",
+      options: {
+        "width": canvas.width,
+        "height": canvas.height
+      }
+    };
+    window.parent.postMessage(message1, "*");
+    var message2 = {
+      messageType: "LOAD_REQUEST",
+    };
+    window.parent.postMessage(message2, "*");
+
     var score = 0;
     var lives = 3;
     var play = false;
@@ -223,7 +236,6 @@
   document.addEventListener("keydown", keyDownHandler, false);
   document.addEventListener("keyup", keyUpHandler, false);
   document.addEventListener("mousemove", mouseMoveHandler, false);
-  document.addEventListener("message", receiveMessage, false);
   document.getElementById('Save').addEventListener("click", SaveHandler);
 
   function PlayPauseHandler(e) {
@@ -247,7 +259,7 @@
         messageType: "SAVE",
         gameState: {
             "playerItems": playerItems,
-            "score": parseFloat(score),
+            "score": score,
         }
       };
       window.parent.postMessage(msg, "*");
@@ -288,28 +300,6 @@
     }
   }
 
-  function receiveMessage(e) {
-    if (e.origin != window.parent) {
-      return;
-    }
-    if (e.data.messageType == "LOAD") {
-      score = e.data.gameState.score;
-      lives = Number(e.data.gameState.playerItems.charAt(0));
-      var i = 1;
-      for(c=0; c<brickColumnCount; c++) {
-          for(r=0; r<brickRowCount; r++) {
-            bricks[c][r].status = parseInt(e.data.gameState.playerItems.charAt(i));
-            i += 1;
-          }
-        }
-      play = false;
-      draw();
-    } else if (e.data.messageType == "ERROR") {
-        alert(e.data.info);
-        draw();
-    }
-  }
-
   var message1 = {
     messageType: "SETTING",
     options: {
@@ -318,11 +308,38 @@
     }
   };
   window.parent.postMessage(message1, "*");
+
   var message2 = {
     messageType: "LOAD_REQUEST",
   };
   window.parent.postMessage(message2, "*");
+
+
+  function receiveMessage(e) {
+
+    if (e.data.messageType == "LOAD") {
+      console.log(e.data.gameState.score);
+      console.log(e.data.gameState.playerItems);
+      score = parseInt(e.data.gameState.score);
+      lives = parseInt(e.data.gameState.playerItems.charAt(0));
+      var i = 1;
+      for(c=0; c<brickColumnCount; c++) {
+          for(r=0; r<brickRowCount; r++) {
+            bricks[c][r].status = parseInt(e.data.gameState.playerItems.charAt(i));
+            i = i+1;
+          }
+        }
+
+      play = false;
+    } else if (e.data.messageType == "ERROR") {
+        alert(e.data.info);
+
+    }
+  }
+
+  document.addEventListener("message", receiveMessage, false);
   draw();
+
   </script>
 
 
