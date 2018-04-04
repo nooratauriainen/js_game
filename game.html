@@ -307,6 +307,13 @@
   function QuitHandler(e) {
     if(e.keyCode == 81 && play == true) {
        play = false;
+      
+       var msg = {
+            "messageType": "SCORE",
+            "score": parseFloat(score),
+          }
+       window.parent.postMessage(msg, "*");
+      
        score = 0;
        lives = 3;
        for(c=0; c<brickColumnCount; c++) {
