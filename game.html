@@ -63,14 +63,12 @@
     function receiveMessage(e) {
 
       if (e.data.messageType == "LOAD") {
-        console.log(e.data.gameState.score);
-        console.log(e.data.gameState.playerItems);
         score = parseInt(e.data.gameState.score);
-        lives = parseInt(e.data.gameState.playerItems.charAt(0));
+        lives = parseInt(e.data.gameState.playerItems[0]);
         var i = 1;
         for(c=0; c<brickColumnCount; c++) {
             for(r=0; r<brickRowCount; r++) {
-              bricks[c][r].status = parseInt(e.data.gameState.playerItems.charAt(i));
+              bricks[c][r].status = parseInt(e.data.gameState.playerItems[i]);
               i = i+1;
             }
           }
@@ -376,4 +374,5 @@
 
 </body>
 </html>
+
 
