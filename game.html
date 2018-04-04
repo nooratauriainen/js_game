@@ -64,7 +64,7 @@
 
       if (e.data.messageType == "LOAD") {
         score = parseInt(e.data.gameState.score);
-        if (gameState.playerItems != []) {
+        if (e.data.gameState.playerItems != []) {
           lives = parseInt(e.data.gameState.playerItems[0]);
           var i = 1;
           for(c=0; c<brickColumnCount; c++) {
