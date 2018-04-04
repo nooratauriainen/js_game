@@ -163,7 +163,7 @@
                   score = score+3;
                 }
                 if (score >= 36) {
-                  startMenu();
+                  play = false;
                 }
               }
           }
@@ -195,6 +195,11 @@
           setTimeout(function(){
             lives = 3;
             score = 0;
+            for(c=0; c<brickColumnCount; c++) {
+                for(r=0; r<brickRowCount; r++) {
+                    bricks[c][r].status =  1;
+                }
+            }
             x = canvas.width/2;
             y = canvas.height-30;
             paddleX = (canvas.width-paddleWidth)/2;
@@ -210,6 +215,11 @@
           setTimeout(function(){
             lives = 3;
             score = 0;
+            for(c=0; c<brickColumnCount; c++) {
+                for(r=0; r<brickRowCount; r++) {
+                    bricks[c][r].status =  1;
+                }
+            }
             x = canvas.width/2;
             y = canvas.height-30;
             paddleX = (canvas.width-paddleWidth)/2;
@@ -356,4 +366,4 @@
 
 </body>
 </html>
-</html>
+
