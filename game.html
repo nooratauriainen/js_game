@@ -196,7 +196,7 @@
             y = canvas.height-30;
             paddleX = (canvas.width-paddleWidth)/2;
           }, 2000);
-        } else if (score == brickRowCount*brickColumnCount+3*brickColumnCount) {
+        } else if (score >= 36) {
           var msg = {
             "messageType": "SCORE",
             "score": parseFloat(score),
@@ -328,8 +328,6 @@
   function receiveMessage(e) {
 
     if (e.data.messageType == "LOAD") {
-      console.log(e.data.gameState.score);
-      console.log(e.data.gameState.playerItems);
       score = parseInt(e.data.gameState.score);
       lives = parseInt(e.data.gameState.playerItems.charAt(0));
       var i = 1;
