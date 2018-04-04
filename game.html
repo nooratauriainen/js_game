@@ -64,11 +64,12 @@
 
       if (e.data.messageType == "LOAD") {
         score = parseInt(e.data.gameState.score);
-        lives = parseInt(e.data.gameState.playerItems[0]);
+        var json = JSON.parse(e.data.gameState);
+        lives = parseInt(json.playerItems[0]);
         var i = 1;
         for(c=0; c<brickColumnCount; c++) {
             for(r=0; r<brickRowCount; r++) {
-              bricks[c][r].status = parseInt(e.data.gameState.playerItems[i]);
+              bricks[c][r].status = parseInt(json.playerItems[i]);
               i = i+1;
             }
           }
