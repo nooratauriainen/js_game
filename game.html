@@ -346,27 +346,6 @@
   }
 
 
-
-  function receiveMessage(e) {
-
-    if (e.data.messageType == "LOAD") {
-      score = parseInt(e.data.gameState.score);
-      lives = parseInt(e.data.gameState.playerItems.charAt(0));
-      var i = 1;
-      for(c=0; c<brickColumnCount; c++) {
-          for(r=0; r<brickRowCount; r++) {
-            bricks[c][r].status = parseInt(e.data.gameState.playerItems.charAt(i));
-            i = i+1;
-          }
-        }
-
-      play = false;
-    } else if (e.data.messageType == "ERROR") {
-        alert(e.data.info);
-
-    }
-  }
-
   document.addEventListener("message", receiveMessage, false);
   draw();
 
