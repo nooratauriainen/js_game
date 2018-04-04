@@ -173,7 +173,9 @@
       }
     }
     function startMenu() {
-        document.getElementById("Save").style.display = "inline-block";
+        if (lives > 0 && score < 36) {
+          document.getElementById("Save").style.display = "inline-block";
+        }
         setBackground();
         ctx.beginPath();
         ctx.rect(0.15*canvas.width, 0.4*canvas.height, 0.7*canvas.width, 0.3*canvas.height);
@@ -184,12 +186,6 @@
         ctx.fillStyle = "white";
 
         if (lives == 0) {
-          var msg = {
-            "messageType": "SCORE",
-            "score": parseFloat(score),
-          }
-
-          window.parent.postMessage(msg, "*");
           ctx.font = "30px Impact";
           ctx.fillText("Game Over", 0.25*canvas.width, 0.55*canvas.height);
           setTimeout(function(){
@@ -250,6 +246,12 @@
         } else if(y + dy > canvas.height-ballRadius) {
           lives -= 1;
           if (lives == 0){
+            var msg = {
+            "messageType": "SCORE",
+            "score": parseFloat(score),
+            }
+
+            window.parent.postMessage(msg, "*");
             play = false;
           } else {
             x = canvas.width/2;
