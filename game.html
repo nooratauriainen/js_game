@@ -60,6 +60,29 @@
     };
     window.parent.postMessage(message2, "*");
 
+    function receiveMessage(e) {
+
+      if (e.data.messageType == "LOAD") {
+        console.log(e.data.gameState.score);
+        console.log(e.data.gameState.playerItems);
+        score = parseInt(e.data.gameState.score);
+        lives = parseInt(e.data.gameState.playerItems.charAt(0));
+        var i = 1;
+        for(c=0; c<brickColumnCount; c++) {
+            for(r=0; r<brickRowCount; r++) {
+              bricks[c][r].status = parseInt(e.data.gameState.playerItems.charAt(i));
+              i = i+1;
+            }
+          }
+
+        play = false;
+      } else if (e.data.messageType == "ERROR") {
+          alert(e.data.info);
+      }
+    }
+
+    window.addEventListener("message", receiveMessage, false);
+
     var score = 0;
     var lives = 3;
     var play = false;
@@ -300,19 +323,6 @@
     }
   }
 
-  var message1 = {
-    messageType: "SETTING",
-    options: {
-      "width": canvas.width,
-      "height": canvas.height
-    }
-  };
-  window.parent.postMessage(message1, "*");
-
-  var message2 = {
-    messageType: "LOAD_REQUEST",
-  };
-  window.parent.postMessage(message2, "*");
 
 
   function receiveMessage(e) {
@@ -344,4 +354,5 @@
 
 
 </body>
+</html>
 </html>
