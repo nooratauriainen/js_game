@@ -232,14 +232,15 @@
             paddleX = (canvas.width-paddleWidth)/2;
           }, 2000);
         } else if (score >= 36) { // Maximum score
-          var msg = {
-            "messageType": "SCORE",
-            "score": parseFloat(score),
-          }
-          window.parent.postMessage(msg, "*");
+
           ctx.font = "30px Impact";
           ctx.fillText("You win!", 0.25*canvas.width, 0.55*canvas.height);
           setTimeout(function(){
+            var msg = {
+                      "messageType": "SCORE",
+                      "score": parseFloat(score),
+                    }
+            window.parent.postMessage(msg, "*");
             lives = 3;
             score = 0;
             for(c=0; c<brickColumnCount; c++) {
