@@ -117,6 +117,7 @@
     var paddleX = (canvas.width-paddleWidth)/2;
     var rightPressed = false;
     var leftPressed = false;
+   
 
     function setBackground(){
       // Setting up the background with fancy color gradients
@@ -236,11 +237,6 @@
           ctx.font = "30px Impact";
           ctx.fillText("You win!", 0.25*canvas.width, 0.55*canvas.height);
           setTimeout(function(){
-            var msg = {
-                      "messageType": "SCORE",
-                      "score": parseFloat(score),
-                    }
-            window.parent.postMessage(msg, "*");
             lives = 3;
             score = 0;
             for(c=0; c<brickColumnCount; c++) {
@@ -270,6 +266,15 @@
         drawBall();
         drawPaddle();
         collisionDetection();
+       if (score >= 36) {
+        var msg = {
+            "messageType": "SCORE",
+            "score": parseFloat(score),
+            }
+
+            window.parent.postMessage(msg, "*");
+            play = false;
+       }
         if(rightPressed && paddleX < canvas.width-paddleWidth) { 
           // Moving the paddle with keys
             paddleX += 6;
